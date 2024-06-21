@@ -33,7 +33,7 @@ function createBubbleChart() {
             .range(d3.schemeCategory10);
     
         if (series.length > 0) {
-            console.log(item.player)
+            console.log()               //probar para ver como pasan los datos
         
         // Create bubble chart elements
         const data_players = SVG1.selectAll(".serie")
@@ -41,7 +41,7 @@ function createBubbleChart() {
             .enter()
             .append("g")
             .attr("class", "serie")
-            .attr("transform", (d, i) => `translate(${i * 260}, 0)`);
+            //.attr("transform", (d, i) => `translate(${i * 260}, 0)`);
     
         data_players
             .append("circle")
