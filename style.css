@@ -7,6 +7,10 @@ body {
     text-align: center;
 }
 
+svg {
+    border: solid 4px white;
+}
+
 .case h2 {
     /* Puedes cambiar el color de fondo (background-color) si lo deseas */
     background-color: #037BCC;

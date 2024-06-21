@@ -2,67 +2,84 @@ const DATAS_URL = "https://raw.githubusercontent.com/pablocamposf/datainfovis/ma
 const SVG1 = d3.select("#vis-1").append("svg");
 
 const WIDTH_VIS_1 = 800;
-const HEIGHT_VIS_1 = 250;
+const HEIGHT_VIS_1 = 600; // Aumentamos la altura para el mapa de burbujas
+
+const MIN_PAR = 2
 
 SVG1.attr("width", WIDTH_VIS_1).attr("height", HEIGHT_VIS_1);
-
 
 createBubbleChart();
 
 function createBubbleChart() {
     d3.csv(DATAS_URL, d3.autoType).then(series => {
-        // Filter data for players appearing at least twice
-        const filteredData = series.filter(d => {
-            const playerCounts = {}; // Object to store player counts
-            series.forEach(item => { // Loop through all data
-              if (playerCounts[item.player]) { // Check if player exists in object
-                playerCounts[item.player]++; // Increment count
-              } else {
-                playerCounts[item.player] = 1; // Initialize count for new player
-              }
-            });
-            return playerCounts[d.player] >= 2; // Check if count for current player is >= 2
-          });
-    
+        // Contar las apariciones de cada jugador independientemente de mayúsculas o minúsculas
+        const playerCounts = series.reduce((acc, item) => {
+            if (typeof item.player === 'string') {
+                const playerName = item.player.toLowerCase(); // Convertir a minúsculas
+                if (!acc[playerName]) {
+                    acc[playerName] = { count: 0, originalNames: [] };
+                }
+                acc[playerName].count += 1;
+                if (!acc[playerName].originalNames.includes(item.player)) {
+                    acc[playerName].originalNames.push(item.player);
+                }
+            }
+            return acc;
+        }, {});
+
+        // Convertir el objeto playerCounts a un array de objetos
+        const countData = Object.keys(playerCounts).map(player => ({
+            player: playerCounts[player].originalNames.join('/'),
+            count: playerCounts[player].count
+        }));
+
+        const filteredData = countData.filter(d => d.count >= MIN_PAR);
+
         const rScale = d3.scaleLinear()
-        .domain(d3.extent(filteredData, d => d.points))
-        .range([5, 40]);
-  
+            .domain(d3.extent(filteredData, d => d.count))
+            .range([5, 40]);
+
         const colorScale = d3.scaleOrdinal()
-            .domain(d3.map(filteredData, d => d.team))
+            .domain(filteredData.map(d => d.player))
             .range(d3.schemeCategory10);
-    
-        if (series.length > 0) {
-            console.log()               //probar para ver como pasan los datos
-        
-        // Create bubble chart elements
-        const data_players = SVG1.selectAll(".serie")
-            .data(filteredData)
-            .enter()
-            .append("g")
-            .attr("class", "serie")
-            //.attr("transform", (d, i) => `translate(${i * 260}, 0)`);
-    
-        data_players
-            .append("circle")
-            .attr("cx", 0)
-            .attr("cy", 0)
-            .attr("r", d => rScale(d.points))
-            .attr("fill", d => colorScale(d.team));
-    
-        // Add labels for player names (optional)
-        data_players
-            .append("text")
-            .attr("x", 0)
-            .attr("y", -20)
-            .text(d => d.player)
-            .style("text-anchor", "middle")
-            .style("font-size", 10);
+
+        if (filteredData.length > 0) {
+            // Crear una simulación de fuerza para agrupar las burbujas
+            const simulation = d3.forceSimulation(filteredData)
+                .force("center", d3.forceCenter(WIDTH_VIS_1 / 2, HEIGHT_VIS_1 / 2))
+                .force("charge", d3.forceManyBody().strength(5))
+                .force("collision", d3.forceCollide().radius(d => rScale(d.count) + 2))
+                .on("tick", ticked);
+
+            // Crear elementos del gráfico de burbujas
+            const dataPlayers = SVG1.selectAll(".serie")
+                .data(filteredData)
+                .enter()
+                .append("g")
+                .attr("class", "serie");
+
+            dataPlayers
+                .append("circle")
+                .attr("r", d => rScale(d.count))
+                .attr("fill", d => colorScale(d.player));
+
+            // Agregar etiquetas para los nombres de los jugadores (opcional)
+            dataPlayers
+                .append("text")
+                .attr("dy", ".3em")
+                .style("text-anchor", "middle")
+                .style("font-size", 10)
+                .text(d => d.player);
+
+            function ticked() {
+                dataPlayers
+                    .attr("transform", d => `translate(${d.x}, ${d.y})`);
+            }
         } else {
             console.log("No data loaded");
-            // Optionally display a message in the HTML
+            // Opcionalmente mostrar un mensaje en el HTML
         }
+    }).catch(error => {
+        console.error('Error loading the CSV data', error);
     });
 }
-
-
