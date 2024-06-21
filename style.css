@@ -54,3 +54,12 @@ img{
     padding: 5px;
     font-weight: bolder;
 }
+
+.slider-container {
+    margin: 20px;
+}
+
+.serie text {
+    font-family: Arial, sans-serif; /* Cambia a la fuente que prefieras */
+    font-size: 12px; /* Tamaño de la fuente */
+}
