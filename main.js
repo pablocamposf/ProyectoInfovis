@@ -87,7 +87,10 @@ function updateVisualization(countData) {
     SVG1.selectAll("*").remove();
 
     // Crear grupo de zoom
-    const zoomGroup = SVG1.call(d3.zoom().on("zoom", (event) => {
+    const zoomGroup = SVG1.call(d3.zoom()
+        .scaleExtent([0.85 , 4]) // Limites de zoom (mínimo 1x y máximo 4x)
+        .translateExtent([[-75, -100], [WIDTH_VIS_1 + 75, HEIGHT_VIS_1 + 100]])
+        .on("zoom", (event) => {
         zoomGroup.attr("transform", event.transform);
     })).append("g");
 
@@ -103,14 +106,24 @@ function updateVisualization(countData) {
         .data(filteredData, d => d.player)
         .enter()
         .append("g")
-        .attr("class", "serie");
+        .attr("class", "serie")
+        .on("click", function(event, d) {
+            onBubbleClick(d);
+        });
 
     dataPlayers
         .append("circle")
         .attr("r", d => rScale(d.count))
-        .attr("fill", "white") // Relleno blanco
-        .attr("stroke", d => colorScale(d.player)) // Color del borde
-        .attr("stroke-width", 2); // Ancho del borde
+        .attr("fill", "white")
+        .attr("stroke", d => colorScale(d.player))
+        .attr("stroke-width", 2)
+        .on("mouseover", function(event, d) {
+            d3.select(this).attr("fill", d => d3.color(colorScale(d.player)).brighter(1));
+        })
+        .on("mouseout", function(event, d) {
+            d3.select(this).attr("fill", "white");
+        });
+        
 
     // Agregar etiquetas para los nombres de los jugadores (opcional)
     dataPlayers
@@ -118,7 +131,8 @@ function updateVisualization(countData) {
         .attr("dy", ".3em")
         .style("text-anchor", "middle")
         .style("font-size", 10)
-        .text(d => d.player);
+        .text(d => d.player)
+        
 
     function ticked() {
         dataPlayers
@@ -127,3 +141,8 @@ function updateVisualization(countData) {
 }
 
 
+function onBubbleClick(d) {
+    // Aquí defines la función que se ejecutará al hacer clic en una burbuja
+    console.log("Bubble clicked with data: ", d);
+    // Puedes realizar cualquier acción aquí
+}
