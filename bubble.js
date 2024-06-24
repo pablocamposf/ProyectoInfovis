@@ -171,7 +171,6 @@ function createSeasonDropdown(playerName, playerData) {
     const dropdown = d3.select("#seasonDropdown").html("");
 
     const seasons = [...new Set(playerData.map(d => d.season))];
-    console.log(`SEASONs ${seasons}`)
 
     dropdown.selectAll("option")
         .data(seasons)
@@ -184,9 +183,6 @@ function createSeasonDropdown(playerName, playerData) {
     dropdown.on("change", function() {
         const selectedSeason = parseInt(this.value);
         const seasonData = playerData.filter(d => d.season === selectedSeason);
-        console.log(`PLAYER DATA ${playerData}`)
-        console.log(`SEASON season ${selectedSeason}`)
-        console.log(`SEASON DATA${seasonData}`)
         createRingChart(playerName, seasonData);
     });
 
@@ -268,20 +264,25 @@ function createRingChart(playerName, playerData) {
 
     // Mostrar la información de temporada, evento y equipo a la izquierda
     const infoGroup = SVG2.append("g")
-        .attr("transform", `translate(20, 40)`);
+    .attr("transform", `translate(20, 40)`);
+
+    // Reemplazar "_" por " " en playerData[0].team
+    const teamName = playerData[0].team.replace(/_/g, " ");
 
     infoGroup.append("text")
         .attr("font-size", "14px")
         .attr("font-weight", "bold")
-        .text(`Season: ${playerData[0].season}`);
+        .text(`Temporada: ${playerData[0].season}`);
+
     infoGroup.append("text")
         .attr("font-size", "14px")
         .attr("dy", "1.2em")
-        .text(`Event: ${playerData[0].event}`);
+        .text(`Evento: ${playerData[0].event}`);
+
     infoGroup.append("text")
         .attr("font-size", "14px")
         .attr("dy", "2.4em")
-        .text(`Team: ${playerData[0].team}`);
+        .text(`Equipo: ${teamName}`);
 
     // Crear tarjetas para otras estadísticas
     const cardData = getCardData(playerData[0]);
@@ -392,8 +393,8 @@ function createRingChart(playerName, playerData) {
     }
 
     function updateInfo(data) {
-        infoGroup.select("text:nth-child(2)").text(`Event: ${data.event}`);
-        infoGroup.select("text:nth-child(3)").text(`Team: ${data.team}`);
+        infoGroup.select("text:nth-child(2)").text(`Evento: ${data.event}`);
+        infoGroup.select("text:nth-child(3)").text(`Equipo: ${data.team}`);
     }
 
     function getRingData(data) {
