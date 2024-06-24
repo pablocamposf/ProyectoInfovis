@@ -7,6 +7,10 @@ body {
     text-align: center;
 }
 
+svg {
+    border: solid 4px white;
+}
+
 .case h2 {
     /* Puedes cambiar el color de fondo (background-color) si lo deseas */
     background-color: #037BCC;
@@ -49,6 +53,15 @@ img{
     border: 1px solid;
     padding: 5px;
     font-weight: bolder;
+}
+
+.slider-container {
+    margin: 20px;
+}
+
+.serie text {
+    font-family: Arial, sans-serif; /* Cambia a la fuente que prefieras */
+    font-size: 12px; /* Tamaño de la fuente */
 }
 
 .tooltip {
