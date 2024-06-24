@@ -1,7 +1,11 @@
 body {
     margin: 0 auto;
     /* Puedes cambiar el color de fondo (background-color) si lo deseas */
-    background-color: #95CFFF;
+    background-image: url('sprays/fondo2.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
     max-width: 80%;
     min-width: 500px;
     text-align: center;
@@ -66,13 +70,112 @@ img{
 
 .tooltip {
     position: absolute;
-    text-align: center;
-    width: 60px;
-    height: 28px;
-    padding: 2px;
-    font: 12px sans-serif;
-    background: lightsteelblue;
-    border: 0px;
-    border-radius: 8px;
-    pointer-events: none;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 8px;
+    border-radius: 5px;
+    pointer-events: none; /* Evita que el tooltip interfiera con eventos del mouse */
+    font-size: 14px;
+    line-height: 1.2;
+    max-width: 200px; /* Ancho máximo del tooltip */
+    text-align: center; /* Alineación del texto */
+    z-index: 999; /* Asegura que esté por encima de otros elementos */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Sombra */
+    transition: opacity 0.3s ease-in-out; /* Transición suave */
+}
+
+.tooltip::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 6px 6px 0 6px;
+    border-color: rgba(0, 0, 0, 0.8) transparent transparent transparent;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+#vis-1, #vis-2, #vis-3 {
+    background-color: rgba(255, 255, 255, 0.425); /* Fondo negro con transparencia */
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 40px;
+    box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.5);
+}
+
+h1, h2, label {
+    font-family: 'Roboto', sans-serif;
+    font-size: 1.8em;
+    margin-top: 40px;
+    color: #ffffff; /* Color blanco para las letras */
+    text-shadow: 2px 2px 0 #000000, /* Borde negro */
+                 -2px 2px 0 #000000,
+                 2px -2px 0 #000000,
+                 -2px -2px 0 #000000,
+                 2px 0 0 #000000,
+                 -2px 0 0 #000000,
+                 0 2px 0 #000000,
+                 0 -2px 0 #000000;
+}
+
+.vis-description {
+    font-family: 'Roboto', sans-serif;
+    font-size: 1em;
+    margin-top: 20px;
+    color: #ffffff; /* Color blanco para las letras */
+    text-shadow: 2px 2px 0 #000000, /* Borde negro */
+                 -2px 2px 0 #000000,
+                 2px -2px 0 #000000,
+                 -2px -2px 0 #000000,
+                 2px 0 0 #000000,
+                 -2px 0 0 #000000,
+                 0 2px 0 #000000,
+                 0 -2px 0 #000000;
+}
+
+.select-container {
+    margin-bottom: 20px;
+}
+
+select {
+    appearance: none; /* Oculta el estilo nativo del sistema operativo */
+    -webkit-appearance: none; /* Para navegadores WebKit como Safari */
+    -moz-appearance: none; /* Para navegadores Firefox */
+    background-color: #f2f2f2; /* Color de fondo */
+    color: #333; /* Color del texto */
+    padding: 10px; /* Espaciado interno */
+    border: 1px solid #ccc; /* Borde */
+    border-radius: 5px; /* Borde redondeado */
+    font-size: 16px; /* Tamaño de fuente */
+    cursor: pointer; /* Cursor al pasar sobre él */
+    width: 200px; /* Ancho del selector */
+}
+
+select:focus {
+    outline: none; /* Quita el contorno al enfocar */
+    border-color: #6eabf5; /* Cambia el color del borde al enfocar */
+    box-shadow: 0 0 5px rgba(110, 171, 245, 0.5); /* Sombra al enfocar */
+}
+
+/* Estilo para las opciones */
+option {
+    background-color: white; /* Color de fondo */
+    color: #333; /* Color del texto */
+    padding: 10px; /* Espaciado interno */
+    font-size: 16px; /* Tamaño de fuente */
+}
+
+/* Estilo para los contenedores de etiquetas */
+.label-container {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.logo {
+    display: block;
+    margin: 0 auto; /* Centra la imagen horizontalmente */
+    max-width: 200px; /* Ancho máximo de la imagen */
+    height: auto; /* Altura ajustada automáticamente */
 }

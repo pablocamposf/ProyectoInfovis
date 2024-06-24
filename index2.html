@@ -12,21 +12,29 @@
 
 <body>
     <div class="container">
-        <h1>Proyecto Infovis</h1>
+        <h1>Análisis de Rendimiento de jugadores en el Mundial de League of Legends S1-S12</h1>
+        <img src="sprays/logo.png" alt="Logo de League of Legends" class="logo">
         
+        <p class="vis-description"><strong>Contexto de los Datos:</strong> Este proyecto visualiza datos recopilados de los Mundiales de League of Legends, un evento anual donde los mejores equipos y jugadores compiten a nivel mundial. Los datos incluyen estadísticas de rendimiento de jugadores de diferentes roles a lo largo de varias temporadas.</p>
 
-        <h2>Visualización 1: Gráfico de Burbujas</h2>
+        <p class="vis-description"><strong>Descripción General de la Herramienta:</strong> Esta herramienta de visualización proporciona una manera interactiva de explorar y comparar el rendimiento de los jugadores en los Mundiales de League of Legends. Está dividida en tres visualizaciones principales:</p>
+
+        <h2>Visualización 1: Participación en Mundiales de LoL</h2>
+        <p class="vis-description">En esta visualización se muestra un gráfico de burbujas que representa a todos los jugadores que han participado en al menos 2 Mundiales de League of Legends. Cada burbuja representa a un jugador, y el tamaño de la burbuja indica la cantidad de veces que el jugador ha participado en Mundiales. Utiliza un selector deslizante que permite ajustar el mínimo de participaciones necesarias para que un jugador aparezca en la visualización. Además, al hacer clic en una burbuja, se despliega información adicional del jugador.</p>
 
         <div class="slider-container">
-            <label for="countSlider">Participación minima: <span id="countValue">2</span></label>
+            <label for="countSlider">Participación mínima: <span id="countValue">2</span></label>
             <input type="range" id="countSlider" min="2" max="8" value="2" step="1">
         </div>
 
         <div id="vis-1"></div>
 
-        <h2>Visualización 2: Gráfico de anillos</h2>
+        <h2>Visualización 2: Rendimiento Individual en Mundiales de LoL</h2>
+        <p class="vis-description">Esta visualización está directamente conectada con la Visualización 1. Cuando se hace clic en una burbuja de alguno de los jugadores, esta visualización muestra información detallada sobre el jugador seleccionado durante un Mundial específico de League of Legends.</p>
+        <p class="vis-description">El gráfico de anillos representa la cantidad de victorias y derrotas del jugador en el Mundial seleccionado. Cada sección del anillo muestra la proporción de victorias y derrotas de manera visual. Además, se muestra el equipo en el que estaba jugando el jugador en ese momento.</p>
+        <p class="vis-description">Además del gráfico de anillos, se presentan datos tabulares que incluyen estadísticas como KDA (Kill/Death/Assist Ratio), Gold/Min (Oro por minuto), entre otros indicadores relevantes del rendimiento del jugador durante ese Mundial específico.</p>
 
-        <div class="dropdown-container">
+        <div class="select-container">
             <label for="seasonDropdown">Seleccionar Temporada: </label>
             <select id="seasonDropdown"></select>
         </div>
@@ -36,29 +44,43 @@
         <script src="bubble.js"></script>
         
 
-        <h2>Visualización 3: Gráfico de puntos</h2>
-        <label for="role-select">Seleccionar Rol:</label>
-        <select id="role-select">
-            <option value="all">Todos</option>
-            <option value="top">Top</option>
-            <option value="jungle">Jungle</option>
-            <option value="mid">Mid</option>
-            <option value="adc">ADC</option>
-            <option value="support">Support</option>
-        </select>
+        <h2>Visualización 3: Comparativa de Rendimiento entre Campeones de Mundiales de LoL</h2>
+        <p class="vis-description">Esta visualización tiene como objetivo comparar el rendimiento de los jugadores que han sido campeones del Mundial en cada temporada de League of Legends a través de diversas estadísticas clave.</p>
+        <p class="vis-description">El gráfico de puntos permite visualizar y comparar las estadísticas seleccionadas entre los jugadores campeones de diferentes temporadas. El valor de la estadística seleccionada para cada jugador está representada a través de puntos en el gráfico.</p>
+        <p class="vis-description">Para facilitar la exploración y comparación, esta visualización cuenta con dos filtros interactivos:<br>
 
-        <label for="stat-select" style="display: inline;">Seleccionar Estadística:</label>
-        <select id="stat-select">
-            <option value="kill_death_assist_ratio">KDA</option>
-            <option value="kills">Kills</option>
-            <option value="deaths">Deaths</option>
-            <option value="assists">Assists</option>
-            <option value="cs/min">CS/Min</option>
-            <option value="gold/min">Gold/Min</option>
-            <option value="kill_participation">Kill Participation</option>
-        </select>
+            - Selección de Característica a Comparar: Permite al usuario elegir la estadística específica que desea comparar entre los jugadores. <br>
+            - Rol a Comparar: Permite al usuario seleccionar el rol específico de los jugadores (Top, Jungle, Mid, ADC, Support) cuyo rendimiento desea comparar.</p>
+
+        <div class="select-container">
+        <label for="role-select" class="label-container">Seleccionar Rol:</label>
+            <select id="role-select">
+                <option value="all">Todos</option>
+                <option value="top">Top</option>
+                <option value="jungle">Jungle</option>
+                <option value="mid">Mid</option>
+                <option value="adc">ADC</option>
+                <option value="support">Support</option>
+            </select>
+
+        <label for="stat-select" style="display: inline;" class="label-container">Seleccionar Estadística:</label>
+            <select id="stat-select">
+                <option value="kill_death_assist_ratio">KDA</option>
+                <option value="kills">Kills</option>
+                <option value="deaths">Deaths</option>
+                <option value="assists">Assists</option>
+                <option value="cs/min">CS/Min</option>
+                <option value="gold/min">Gold/Min</option>
+                <option value="kill_participation">Kill Participation</option>
+            </select>
+        </div>
 
         <div id="vis-3"></div>
+
+        <div class="references">
+            <h3>Referencias</h3>
+            <p>OpenAI. (2024). Código base proporcionado para visualización de datos en proyecto.</p>
+        </div>
 
         <script src="main.js"></script>
 

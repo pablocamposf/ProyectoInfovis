@@ -52,6 +52,7 @@ function createScatterPlot(role, stat) {
         g.append("text")
             .attr("transform", `translate(${width / 2},${height + margin.bottom - 80})`)
             .style("text-anchor", "middle")
+            .style("font-family", "Roboto")
             .text("Jugador Campeón");
 
         g.append("text")
@@ -60,6 +61,7 @@ function createScatterPlot(role, stat) {
             .attr("x", 0 - (height / 2))
             .attr("dy", "1em")
             .style("text-anchor", "middle")
+            .style("font-family", "Roboto")
             .text(stat);
 
         g.selectAll(".dot")
@@ -75,7 +77,7 @@ function createScatterPlot(role, stat) {
                 tooltip.transition()
                     .duration(200)
                     .style("opacity", .9);
-                tooltip.html(`${stat}: ${d[stat]}`)
+                tooltip.html(`<strong>${d.player}</strong><br>${stat}: ${d[stat]}`)
                     .style("left", (event.pageX + 5) + "px")
                     .style("top", (event.pageY - 28) + "px");
             })
