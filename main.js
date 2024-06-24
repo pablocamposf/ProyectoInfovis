@@ -57,19 +57,19 @@ function createBubbleChart() {
     });
 }
 
-const SVG2 = d3.select("#vis-2").append("svg");
-const WIDTH_VIS_2 = 900;
-const HEIGHT_VIS_2 = 500;
-SVG2.attr("width", WIDTH_VIS_2).attr("height", HEIGHT_VIS_2);
+const SVG23 = d3.select("#vis-3").append("svg");
+const WIDTH_VIS_3 = 900;
+const HEIGHT_VIS_3 = 500;
+SVG2.attr("width", WIDTH_VIS_3).attr("height", HEIGHT_VIS_3);
 
 const margin = {top: 20, right: 30, bottom: 200, left: 40};
-const width = WIDTH_VIS_2 - margin.left - margin.right;
-const height = HEIGHT_VIS_2 - margin.top - margin.bottom;
+const width = WIDTH_VIS_3 - margin.left - margin.right;
+const height = HEIGHT_VIS_3 - margin.top - margin.bottom;
 
 const xScale = d3.scaleBand().range([0, width]).padding(0.1);
 const yScale = d3.scaleLinear().range([height, 0]);
 
-const g = SVG2.append("g")
+const g = SVG3.append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
 
 const tooltip = d3.select("body").append("div")
