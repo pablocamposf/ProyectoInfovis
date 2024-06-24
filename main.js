@@ -57,10 +57,10 @@ function createBubbleChart() {
     });
 }
 
-const SVG23 = d3.select("#vis-3").append("svg");
+const SVG3 = d3.select("#vis-3").append("svg");
 const WIDTH_VIS_3 = 900;
 const HEIGHT_VIS_3 = 500;
-SVG2.attr("width", WIDTH_VIS_3).attr("height", HEIGHT_VIS_3);
+SVG3.attr("width", WIDTH_VIS_3).attr("height", HEIGHT_VIS_3);
 
 const margin = {top: 20, right: 30, bottom: 200, left: 40};
 const width = WIDTH_VIS_3 - margin.left - margin.right;
