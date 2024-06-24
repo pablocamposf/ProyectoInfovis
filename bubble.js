@@ -154,8 +154,8 @@ function updateVisualization(countData) {
 function onBubbleClick(d) {
     const playerName = d.player;
     const playerData = allData.filter(item => item.player === playerName);
-    console.log("Bubble clicked with data: ", playerData);
-    createRingChart(playerName, playerData);
+    console.log("data: ", playerData);
+    createSeasonDropdown(playerName, playerData);
 }
 
 // VISUALIZACION 2
@@ -166,62 +166,259 @@ const HEIGHT_VIS_2 = 400;
 
 SVG2.attr("width", WIDTH_VIS_2).attr("height", HEIGHT_VIS_2);
 
-function createRingChart(playerName, playerData) {
-    SVG2.selectAll("*").remove();  // Limpiar el SVG para nueva visualización
+function createSeasonDropdown(playerName, playerData) {
+    // Limpiar y crear opciones en el menú desplegable
+    const dropdown = d3.select("#seasonDropdown").html("");
 
-    // Agregar nombre del jugador en el centro arriba
-    SVG2.append("text")
-        .attr("x", WIDTH_VIS_2 / 2)
-        .attr("y", 30)
-        .attr("text-anchor", "middle")
-        .attr("font-size", "24px")
-        .attr("font-weight", "bold")
-        .text(playerName);
+    const seasons = [...new Set(playerData.map(d => d.season))];
+    console.log(`SEASONs ${seasons}`)
 
-    // Crear contenedor para la información de la izquierda
-    const infoGroup = SVG2.append("g")
-        .attr("transform", "translate(50, 50)");
+    dropdown.selectAll("option")
+        .data(seasons)
+        .enter()
+        .append("option")
+        .attr("value", d => d)
+        .text(d => `Season ${d}`);
 
-    // Mostrar datos de season, event, team a la izquierda
-    playerData.forEach((d, i) => {
-        infoGroup.append("text")
-            .attr("x", 0)
-            .attr("y", i * 20)
-            .attr("font-size", "12px")
-            .text(`Season: ${d.season}, Event: ${d.event}, Team: ${d.team}`);
+    // Evento de cambio del menú desplegable
+    dropdown.on("change", function() {
+        const selectedSeason = parseInt(this.value);
+        const seasonData = playerData.filter(d => d.season === selectedSeason);
+        console.log(`PLAYER DATA ${playerData}`)
+        console.log(`SEASON season ${selectedSeason}`)
+        console.log(`SEASON DATA${seasonData}`)
+        createRingChart(playerName, seasonData);
     });
 
-    // Crear datos para el gráfico de anillos
-    const ringData = [
-        { label: "Wins", value: d3.sum(playerData, d => d.wins) },
-        { label: "Loses", value: d3.sum(playerData, d => d.loses) },
-        { label: "Kills", value: d3.sum(playerData, d => d.kills) },
-        { label: "Kill Participation", value: d3.sum(playerData, d => d.kill_participation) },
-        { label: "Gold/min", value: d3.sum(playerData, d => d.gold_min) },
-        { label: "Damage/min", value: d3.sum(playerData, d => d.damage_min) }
-    ];
+    // Llamar a createRingChart con la primera temporada por defecto
+    if (seasons.length > 0) {
+        const initialSeason = seasons[0];
+        dropdown.property("value", initialSeason);
+        const initialSeasonData = playerData.filter(d => d.season === initialSeason);
+        createRingChart(playerName, initialSeasonData);
+    }
+}
 
-    const radius = Math.min(WIDTH_VIS_2, HEIGHT_VIS_2) / 4;
-    const arc = d3.arc().innerRadius(radius - 50).outerRadius(radius);
+function createRingChart(playerName, playerData) {
+    if (playerData.length === 0) return;
+
+    SVG2.selectAll("*").remove();
+
+    const radius = Math.min(WIDTH_VIS_2, HEIGHT_VIS_2) / 2 - 50;
+    const g = SVG2.append("g")
+        .attr("transform", `translate(${WIDTH_VIS_2 / 2 - 100}, ${HEIGHT_VIS_2 / 2})`);
+
+    const arc = d3.arc().innerRadius(radius * 0.5).outerRadius(radius);
     const pie = d3.pie().value(d => d.value);
 
-    const ringGroup = SVG2.append("g")
-        .attr("transform", `translate(${WIDTH_VIS_2 / 2 + 200}, ${HEIGHT_VIS_2 / 2})`);
+    // Datos para el gráfico de anillo
+    const ringData = getRingData(playerData[0]);
 
-    const arcs = ringGroup.selectAll(".arc")
+    const color = d3.scaleOrdinal(d3.schemeCategory10);
+
+    // Crear un tooltip
+    const tooltip = d3.select("body").append("div")
+        .attr("class", "tooltip")
+        .style("position", "absolute")
+        .style("z-index", "10")
+        .style("visibility", "hidden")
+        .style("background", "#fff")
+        .style("border", "1px solid #ddd")
+        .style("padding", "8px")
+        .style("border-radius", "4px")
+        .style("box-shadow", "0px 0px 5px rgba(0,0,0,0.1)")
+        .text("");
+
+    const path = g.selectAll("path")
         .data(pie(ringData))
         .enter()
-        .append("g")
-        .attr("class", "arc");
-
-    arcs.append("path")
+        .append("path")
         .attr("d", arc)
-        .attr("fill", (d, i) => d3.schemeCategory10[i]);
+        .attr("fill", d => color(d.data.label))
+        .on("mouseover", function (event, d) {
+            d3.select(this).attr("fill", d3.color(color(d.data.label)).brighter(1));
+            tooltip.text(`${d.data.label}: ${d.data.value}`)
+                .style("visibility", "visible");
+        })
+        .on("mousemove", function (event) {
+            tooltip.style("top", (event.pageY - 10) + "px").style("left", (event.pageX + 10) + "px");
+        })
+        .on("mouseout", function (event, d) {
+            d3.select(this).attr("fill", color(d.data.label));  // Restaurar el color original
+            tooltip.style("visibility", "hidden");
+        });
 
-    arcs.append("text")
+    g.selectAll("text")
+        .data(pie(ringData))
+        .enter()
+        .append("text")
         .attr("transform", d => `translate(${arc.centroid(d)})`)
         .attr("dy", "0.35em")
         .attr("text-anchor", "middle")
         .attr("font-size", "10px")
         .text(d => d.data.label);
+
+    // Mostrar el nombre del jugador
+    SVG2.append("text")
+        .attr("x", WIDTH_VIS_2 / 2)
+        .attr("y", 20)
+        .attr("text-anchor", "middle")
+        .attr("font-size", "20px")
+        .text(playerName);
+
+    // Mostrar la información de temporada, evento y equipo a la izquierda
+    const infoGroup = SVG2.append("g")
+        .attr("transform", `translate(20, 40)`);
+
+    infoGroup.append("text")
+        .attr("font-size", "14px")
+        .attr("font-weight", "bold")
+        .text(`Season: ${playerData[0].season}`);
+    infoGroup.append("text")
+        .attr("font-size", "14px")
+        .attr("dy", "1.2em")
+        .text(`Event: ${playerData[0].event}`);
+    infoGroup.append("text")
+        .attr("font-size", "14px")
+        .attr("dy", "2.4em")
+        .text(`Team: ${playerData[0].team}`);
+
+    // Crear tarjetas para otras estadísticas
+    const cardData = getCardData(playerData[0]);
+
+    const cardWidth = 100;
+    const cardHeight = 80;
+    const cardSpacing = 20;
+    const startX = WIDTH_VIS_2 / 2 + 150;
+    const startY = HEIGHT_VIS_2 / 2 - 100; // Ajustar la posición inicial para distribuir en una cuadrícula 2x2
+
+    const cards = SVG2.selectAll(".card")
+        .data(cardData)
+        .enter()
+        .append("g")
+        .attr("class", "card")
+        .attr("transform", (d, i) => {
+            const x = startX + (i % 2) * (cardWidth + cardSpacing); // Distribuir en 2 columnas
+            const y = startY + Math.floor(i / 2) * (cardHeight + cardSpacing); // Distribuir en 2 filas
+            return `translate(${x}, ${y})`;
+        });
+
+    cards.append("rect")
+        .attr("width", cardWidth)
+        .attr("height", cardHeight)
+        .attr("rx", 10)
+        .attr("ry", 10)
+        .attr("fill", "#f0f0f0")
+        .attr("stroke", "#d0d0d0");
+
+    cards.append("text")
+        .attr("x", cardWidth / 2)
+        .attr("y", 20)
+        .attr("text-anchor", "middle")
+        .attr("font-size", "12px")
+        .text(d => d.label);
+
+    cards.append("text")
+        .attr("x", cardWidth / 2)
+        .attr("y", cardHeight / 2 + 10)
+        .attr("text-anchor", "middle")
+        .attr("font-size", "24px")
+        .attr("font-weight", "bold")
+        .text(d => d.value);
+
+    // Verificar si hay más de un evento para el mismo jugador y temporada
+    const uniqueEvents = [...new Set(playerData.map(d => d.event))];
+    if (uniqueEvents.length > 1) {
+        const buttonGroup = SVG2.append("g")
+            .attr("transform", `translate(${WIDTH_VIS_2 - 100}, 20)`);
+
+        uniqueEvents.forEach((event, index) => {
+            buttonGroup.append("rect")
+                .attr("x", 0)
+                .attr("y", index * 30)
+                .attr("width", 80)
+                .attr("height", 25)
+                .attr("rx", 5)
+                .attr("ry", 5)
+                .attr("fill", "#007bff")
+                .attr("stroke", "#0056b3")
+                .attr("class", "event-button")
+                .style("cursor", "pointer")
+                .on("click", () => updateChart(event));
+
+            buttonGroup.append("text")
+                .attr("x", 40)
+                .attr("y", index * 30 + 17)
+                .attr("text-anchor", "middle")
+                .attr("font-size", "12px")
+                .attr("fill", "#fff")
+                .style("pointer-events", "none")
+                .text(event);
+        });
+    }
+
+    function updateChart(selectedEvent) {
+        const filteredData = playerData.filter(d => d.event === selectedEvent);
+        updateRingChart(filteredData[0]);
+        updateCardData(filteredData[0]);
+        updateInfo(filteredData[0]);
+    }
+
+    function updateRingChart(data) {
+        const newRingData = getRingData(data);
+        const path = g.selectAll("path").data(pie(newRingData));
+        path.enter().append("path")
+            .merge(path)
+            .attr("d", arc)
+            .attr("fill", d => color(d.data.label));
+        path.exit().remove();
+
+        const texts = g.selectAll("text").data(pie(newRingData));
+        texts.enter().append("text")
+            .merge(texts)
+            .attr("transform", d => `translate(${arc.centroid(d)})`)
+            .attr("dy", "0.35em")
+            .attr("text-anchor", "middle")
+            .attr("font-size", "10px")
+            .text(d => d.data.label);
+        texts.exit().remove();
+    }
+
+    function updateCardData(data) {
+        const newCardData = getCardData(data);
+        const cards = SVG2.selectAll(".card").data(newCardData);
+        cards.select("text:nth-child(2)").text(d => d.label);
+        cards.select("text:nth-child(3)").text(d => d.value);
+    }
+
+    function updateInfo(data) {
+        infoGroup.select("text:nth-child(2)").text(`Event: ${data.event}`);
+        infoGroup.select("text:nth-child(3)").text(`Team: ${data.team}`);
+    }
+
+    function getRingData(data) {
+        const ringData = [];
+        if (data.wins !== 0) {
+            ringData.push({ label: "Wins", value: data.wins });
+        }
+        if (data.loses !== 0) {
+            ringData.push({ label: "Loses", value: data.loses });
+        }
+        return ringData;
+    }
+
+    function getCardData(data) {
+        const cardData = [
+            { label: "KDA", value: data.kill_death_assist_ratio },
+            { label: "Gold/min", value: data["gold/min"] }
+        ];
+        if (data.kill_participation !== null) {
+            cardData.push({ label: "Kill Participation", value: data.kill_participation });
+        }
+        if (data["damage/min"] !== null) {
+            cardData.push({ label: "Damage/min", value: data["damage/min"] });
+        }
+        return cardData;
+    }
 }
+
