@@ -215,14 +215,6 @@ function createRingChart(playerName, playerData) {
     // Crear un tooltip
     const tooltip = d3.select("body").append("div")
         .attr("class", "tooltip")
-        .style("position", "absolute")
-        .style("z-index", "10")
-        .style("visibility", "hidden")
-        .style("background", "#fff")
-        .style("border", "1px solid #ddd")
-        .style("padding", "8px")
-        .style("border-radius", "4px")
-        .style("box-shadow", "0px 0px 5px rgba(0,0,0,0.1)")
         .text("");
 
     const path = g.selectAll("path")
